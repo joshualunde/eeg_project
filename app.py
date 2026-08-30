@@ -184,15 +184,25 @@ try:
     # TreeExplainer only works for tree-based models (Random Forest). For the
     # deployed SVM, KernelExplainer is model-agnostic but much slower --
     # background sample kept tiny here to stay responsive in a live app.
+    def extract_class_shap(shap_values, pred_class, sample_idx=0):
+        """Handle both SHAP return formats: older versions return a list of
+        per-class arrays shaped (n_samples, n_features); newer versions can
+        return a single ndarray shaped (n_samples, n_features, n_classes).
+        Indexing the wrong way causes an out-of-bounds error when n_samples=1."""
+        if isinstance(shap_values, list):
+            return shap_values[pred_class][sample_idx]
+        else:
+            return shap_values[sample_idx, :, pred_class]
+
     if hasattr(model, "estimators_"):
         explainer = shap.TreeExplainer(model)
         shap_values = explainer.shap_values(features)
-        class_shap = shap_values[pred_class][0]
+        class_shap = extract_class_shap(shap_values, pred_class)
     else:
         background = np.zeros((1, features.shape[1]))  # zero background -- fast but coarse
         explainer = shap.KernelExplainer(model.predict_proba, background)
         shap_values = explainer.shap_values(features, nsamples=100)
-        class_shap = shap_values[pred_class][0]
+        class_shap = extract_class_shap(shap_values, pred_class)
 
     order = np.argsort(np.abs(class_shap))[::-1][:10]
     fig2, ax = plt.subplots(figsize=(6, 4))
