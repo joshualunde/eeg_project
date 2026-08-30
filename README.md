@@ -2,7 +2,7 @@
 
 An end-to-end machine learning pipeline that classifies mental workload (low / moderate / high) from raw EEG signal, built to explore how cognitive load theory can inform signal processing and feature engineering for a genuinely deployed ML system.
 
-**Live demo:** https://eegproject-yhe24iij4vtukex65gwkjq.streamlit.app/
+**Live demo:** https://eegproject-9sntr7exadp3p5tksjx2gs.streamlit.app/
 **Stack:** Python, MNE, scikit-learn, PyTorch, SHAP, Streamlit
 
 ---
